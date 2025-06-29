@@ -1,0 +1,17 @@
+.visible {
+    visibility: visible;
+}
+
+.red {
+    background-color: red;
+}
+
+.green {
+    background-color: green;
+}
+
+#result {
+    width: fit-content;
+    padding: 10px 3px;
+}
+ 
