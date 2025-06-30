@@ -6,7 +6,7 @@
     background-color: green;
 }
 
-#result {
+#currentResult {
     width: fit-content;
     padding: 10px 3px;
 }

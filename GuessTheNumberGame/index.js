@@ -1,115 +1,103 @@
-let iteration = 0;
+let guessCount;
 let random;
 
-function startGame() {
-  reset();
+const submitGuessBtn = document.querySelector("#submitGuess");
+const userInput = document.querySelector("#userInput");
 
-  getSubmitButton().addEventListener("click", () => {
-    const userInput = document.querySelector("#userInput").value;
-    if (userInput) {
-      handleButtonClick(random, userInput);
-    } else {
-      alert("enter a number between 1 and 100 (inclusive)");
+const guesses = document.querySelector("#guesses");
+const currentResult = document.querySelector("#currentResult");
+const indicator = document.querySelector("#indicator");
+
+const startNewGameBtn = document.querySelector("#startNewGame");
+
+function startGame() {
+  resetState();
+
+  userInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      handleUserInput();
     }
   });
-  getStartNewGameBtn().addEventListener("click", () => {
-    reset();
+
+  submitGuessBtn.addEventListener("click", () => {
+    handleUserInput();
+  });
+  startNewGameBtn.addEventListener("click", () => {
+    resetState();
   });
 }
 
-function reset() {
-  iteration = 0;
+function handleUserInput() {
+  const userGuessNumber = Number(userInput.value);
+  if (userGuessNumber > 0 && userGuessNumber < 101) {
+    handleButtonClick(userGuessNumber);
+    userInput.value = "";
+  } else {
+    alert("enter a number between 1 and 100 (inclusive)");
+  }
+}
+
+function resetState() {
+  guessCount = 1;
   random = getRandomNumber(1, 100);
-  console.log(random);
-  getSubmitButton().disabled = false;
-  const guesses = getGuessesPargraph();
-  guesses.textContent = "Previous guesses:";
-  guesses.style.display = "none";
-  getResultParagraph().style.display = "none";
-  getIndicatorParagraph().style.display = "none";
-  getStartNewGameBtn().style.display = "none";
-}
+  userInput.value = "";
+  userInput.disabled = false;
+  submitGuessBtn.disabled = false;
 
-function getIndicatorParagraph() {
-  return document.querySelector("#indicator");
-}
+  currentResult.className = "";
+  for (const p of document.querySelectorAll(".gameStatus p")) {
+    p.textContent = "";
+  }
 
-function getStartNewGameBtn() {
-  return document.querySelector("#startNewGame");
+  startNewGameBtn.style.display = "none";
 }
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function handleButtonClick(random, userInput) {
-  const diff = Math.abs(random - userInput);
+function handleButtonClick(userInputNumber) {
+  if (guessCount === 1) {
+    guesses.textContent = "Presvious guesses";
+  }
+  guesses.textContent += ` ${userInputNumber}`;
+  const diff = Math.abs(random - userInputNumber);
   if (diff !== 0) {
-    setResult("Wrong", "red");
+    currentResult.textContent = "Wrong";
+    currentResult.className = "red";
     if (diff > 10) {
-      if (userInput > random) {
-        setIndicator("Last guess was too high!");
+      if (userInputNumber > random) {
+        indicator.textContent = "Last guess was too high!";
       } else {
-        setIndicator("Last guess was too low!");
+        indicator.textContent = "Last guess was too low!";
       }
     } else {
-      if (userInput > random) {
-        setIndicator("Last guess was high!");
+      if (userInputNumber > random) {
+        indicator.textContent = "Last guess was high!";
       } else {
-        setIndicator("Last guess was low!");
+        indicator.textContent = "Last guess was low!";
       }
     }
   } else {
-    setResult("Congratulations! You got it right!", "green");
-    getSubmitButton().disabled = true;
-    displayStartNewGameButton();
+    currentResult.textContent = "Congratulations! You got it right!";
+    currentResult.className = "green";
+    gameOver();
     return;
   }
-  addGuess(userInput);
-  iteration++;
-  if (iteration == 10) {
-    setResult("Game over!!", "red");
-    setIndicator("");
-    getSubmitButton().disabled = true;
-    displayStartNewGameButton();
+  if (guessCount == 10) {
+    currentResult.textContent = "Game over!!";
+    gameOver();
   }
+  guessCount++;
 }
 
-function addGuess(userInput) {
-  const guesses = getGuessesPargraph();
-  guesses.style.display = "block";
-  guesses.textContent += ` ${userInput}`;
-}
+function gameOver() {
+  submitGuessBtn.disabled = true;
+  userInput.disabled = true;
 
-function setResult(message, backgroundClass) {
-  const result = getResultParagraph();
-  result.textContent = message;
-  result.className = backgroundClass;
-  result.style.display = "block";
-}
+  indicator.textContent = "";
 
-function getGuessesPargraph() {
-  return document.querySelector("#guesses");
-}
-
-function setIndicator(message, backgroundClass) {
-  const indicator = getIndicatorParagraph();
-  indicator.style.display = "block";
-  indicator.className = backgroundClass;
-  indicator.textContent = message;
-}
-
-function getResultParagraph() {
-  return document.querySelector("#result");
-}
-
-function displayStartNewGameButton() {
-  const startNewGameBtn = document.querySelector("#startNewGame");
   startNewGameBtn.style.display = "block";
-}
-
-function getSubmitButton() {
-  return document.querySelector("#submitResult");
 }
 
 startGame();
