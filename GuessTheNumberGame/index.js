@@ -1,12 +1,10 @@
 let iteration = 0;
+let random;
 
 function startGame() {
-  const startNewGameBtn = document.querySelector("#startNewGame");
-  startNewGameBtn.style.visibility = "hidden";
+  reset();
 
-  const random = getRandomNumber(1, 100);
-  const button = getSubmitButton();
-  button.addEventListener("click", () => {
+  getSubmitButton().addEventListener("click", () => {
     const userInput = document.querySelector("#userInput").value;
     if (userInput) {
       handleButtonClick(random, userInput);
@@ -16,6 +14,27 @@ function startGame() {
   });
 }
 
+function reset() {
+  iteration = 0;
+  random = getRandomNumber(1, 100);
+  console.log(random);
+  getSubmitButton().style.disabled = "false";
+  const guesses = getGuessesPargraph();
+  guesses.textContent = "Previous guesses:";
+  guesses.style.display = "none";
+  getResultParagraph().style.display = "none";
+  getIndicatorParagraph().style.display = "none";
+  getStartNewGameBtn().style.display = "none";
+}
+
+function getIndicatorParagraph() {
+  return document.querySelector("#indicator");
+}
+
+function getStartNewGameBtn() {
+  return document.querySelector("#startNewGame");
+}
+
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -23,45 +42,67 @@ function getRandomNumber(min, max) {
 function handleButtonClick(random, userInput) {
   const diff = Math.abs(random - userInput);
   if (diff !== 0) {
+    setResult("Wrong", "red");
     if (diff > 10) {
       if (userInput > random) {
-        displayMessage("Last guess was too high!", "red");
+        setIndicator("Last guess was too high!");
       } else {
-        displayMessage("Last guess was too low!", "red");
+        setIndicator("Last guess was too low!");
       }
     } else {
       if (userInput > random) {
-        displayMessage("Last guess was high!", "red");
+        setIndicator("Last guess was high!");
       } else {
-        displayMessage("Last guess was low!", "red");
+        setIndicator("Last guess was low!");
       }
     }
   } else {
-    displayMessage("Congratulations! You got it right!", "green");
+    setResult("Congratulations! You got it right!", "green");
     getSubmitButton().disabled = true;
     displayStartNewGameButton();
     return;
   }
-  const guesses = document.querySelector("#guesses");
-  guesses.textContent += ` ${userInput}`;
+  addGuess(userInput);
   iteration++;
   if (iteration == 10) {
-    displayMessage("Game over!!", "red");
+    setResult("Game over!!", "red");
+    setIndicator("");
     getSubmitButton().disabled = true;
     displayStartNewGameButton();
   }
 }
 
-function displayMessage(message, backgroundClass) {
-  const result = document.querySelector("#result");
-  result.className = "";
-  result.classList.add(backgroundClass);
+function addGuess(userInput) {
+  const guesses = getGuessesPargraph();
+  guesses.style.display = "block";
+  guesses.textContent += ` ${userInput}`;
+}
+
+function setResult(message, backgroundClass) {
+  const result = getResultParagraph();
   result.textContent = message;
+  result.className = backgroundClass;
+  result.style.display = "block";
+}
+
+function getGuessesPargraph() {
+  return document.querySelector("#guesses");
+}
+
+function setIndicator(message, backgroundClass) {
+  const indicator = getIndicatorParagraph();
+  indicator.style.display = "block";
+  indicator.className = backgroundClass;
+  indicator.textContent = message;
+}
+
+function getResultParagraph() {
+  return document.querySelector("#result");
 }
 
 function displayStartNewGameButton() {
   const startNewGameBtn = document.querySelector("#startNewGame");
-  startNewGameBtn.style.visibility = "visible";
+  startNewGameBtn.style.display = "block";
 }
 
 function getSubmitButton() {
