@@ -12,13 +12,16 @@ function startGame() {
       alert("enter a number between 1 and 100 (inclusive)");
     }
   });
+  getStartNewGameBtn().addEventListener("click", () => {
+    reset();
+  });
 }
 
 function reset() {
   iteration = 0;
   random = getRandomNumber(1, 100);
   console.log(random);
-  getSubmitButton().style.disabled = "false";
+  getSubmitButton().disabled = false;
   const guesses = getGuessesPargraph();
   guesses.textContent = "Previous guesses:";
   guesses.style.display = "none";
