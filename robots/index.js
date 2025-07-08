@@ -18,9 +18,10 @@ async function renderUsers() {
     saveData("users", JSON.stringify(users));
   }
   const container = document.querySelector(".container");
-  container.innerHTML = users.map(
-    (user) =>
-      `
+  container.innerHTML = users
+    .map(
+      (user) =>
+        `
       <div class="card">
         <ul>
           <li>First Name ${user.firstName}</li>
@@ -32,5 +33,6 @@ async function renderUsers() {
         <img src="https://robohash.org/${user.firstName}" alt="robot pictures" />
       </div>
     `
-  );
+    )
+    .join("");
 }
